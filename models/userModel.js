@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { error } from "node:console";
 import {createHmac, randomBytes} from "node:crypto"
 import { type } from "node:os";
+import {createToken, validateToken} from "../util/auth.js"
+
 const userSchema = new mongoose.Schema({
     fullname: {
         type: String,
@@ -59,7 +61,8 @@ userSchema.static("matchPassword", async function(email, password){
 
     if(checkPass !== hashedpass) throw new Error("Incorrect password")
 
-    return user ;
+    const token = createToken(user);
+    return token
 })
 
 const User = mongoose.model('User', userSchema);
