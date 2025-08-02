@@ -9,7 +9,7 @@ const commentRout = mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
     },
-    blogID :{
+    blogId :{
         type : Schema.Types.ObjectId,
         ref: "Blog",
     },

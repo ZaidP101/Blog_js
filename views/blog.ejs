@@ -22,8 +22,15 @@
                 <button class="btn btn-sm btn-primary" type="submit">Add</button>
             </div>
         </form>
+        <% comments.forEach(comment => { %>
+            <div class="mt-3">
+                <img src="<%= comment.createdBy.profileimg %>" width="50px"/>
+                <strong><%= comment.createdBy.fullname %></strong>
+                <pre><%= comment.content %></pre>
+                <pre><%= JSON.stringify(comments, null, 2) %></pre>
+            </div>
+        <% }) %>
     </div> 
     <%- include('partials/scripts') %>
-    
 </body>
 </html>
