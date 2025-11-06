@@ -36,6 +36,10 @@ app.get('/', async (req,res) =>{
 
 app.use('/user', UserRouter);
 app.use('/blog', blogRoute);
+app.get('/about', (req, res) => {
+  res.render('about');
+});
+
 
 ConnectionDB();
 
