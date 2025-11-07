@@ -6,14 +6,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies - leveraging cache
-RUN npm install --legacy-peer-deps --verbose
+RUN npm install --frozen-lockfile --verbose
 
 # Copy source code
 COPY . .
 
 # Build the application (if applicable)
 RUN npm run build
-
 
 # --- Stage 2: Production Stage ---
 FROM node:18-alpine AS production
@@ -27,7 +26,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.env ./
 
 # Install only production dependencies
-RUN npm install --legacy-peer-deps --production --verbose --omit=dev
+RUN npm install --production --frozen-lockfile --omit=dev --verbose
 
 # Show Node version
 RUN node -v
@@ -37,6 +36,7 @@ RUN npm -v
 
 # Set environment variables
 ENV NODE_ENV production
+ENV PORT 3000
 
 # User to run the application (security best practice)
 RUN addgroup -g 1001 nodejs && \
@@ -49,7 +49,7 @@ USER nodejs
 EXPOSE 3000
 
 # Healthcheck
-HEALTHCHECK --interval=5m --timeout=3s CMD curl -f http://localhost:3000 || exit 1
+HEALTHCHECK --interval=5m --timeout=3s CMD curl -f http://localhost:${PORT} || exit 1
 
 # Define the command to start the application
 CMD ["node", "dist/index.js"]
