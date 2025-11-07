@@ -28,11 +28,7 @@ COPY --from=builder /app/.env ./
 # Install only production dependencies
 RUN npm install --production --frozen-lockfile --omit=dev --verbose
 
-# Echo environment variables (be careful not to print secrets)
-RUN echo "NODE_ENV is $NODE_ENV"
 
-# Print installed packages
-RUN npm list --depth=0
 
 # Set environment variables
 ENV NODE_ENV production
