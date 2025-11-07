@@ -2,50 +2,52 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package.json and lockfile
+# Copy package and lock files
 COPY package*.json ./
+COPY yarn.lock ./
 
-# Install dependencies - leveraging cache
-RUN npm install --frozen-lockfile --verbose
+# Install dependencies - leveraging caching
+RUN yarn install --frozen-lockfile --network-timeout 60000 || yarn cache clean
 
 # Copy source code
 COPY . .
 
-# Build the application (if applicable)
-RUN npm run build
+# Build the application (if necessary, e.g., for TypeScript projects)
+# Example for a project that uses a build step (e.g., TypeScript):
+# RUN yarn build
 
-# --- Stage 2: Production Stage ---
+# --- Production Stage ---
 FROM node:18-alpine AS production
 
 WORKDIR /app
 
 # Copy only the necessary files from the builder stage
 COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/yarn.lock ./
+COPY --from=builder /app/node_modules ./
+#COPY --from=builder /app/dist ./   <- If you have a dist folder after build
+COPY --from=builder /app/public ./
+COPY --from=builder /app/index.js ./  # Or your main entry point
 COPY --from=builder /app/.env ./
 
-# Install only production dependencies
-RUN npm install --production --frozen-lockfile --omit=dev --verbose
-
-
-
-# Set environment variables
+# Set environment variables (consider using Docker secrets for sensitive data)
 ENV NODE_ENV production
 ENV PORT 3000
+# Define any other environment variables required by your application
+# ENV API_KEY=your_api_key
 
-# User to run the application (security best practice)
-RUN addgroup -g 1001 nodejs && \
-    adduser -u 1001 -G nodejs nodejs && \
-    chown -R nodejs:nodejs /app
-
-USER nodejs
-
-# Expose the port your application listens on
+# Expose port
 EXPOSE 3000
 
-# Healthcheck
-HEALTHCHECK --interval=5m --timeout=3s CMD curl -f http://localhost:${PORT} || exit 1
+# User for security (non-root)
+RUN addgroup -g 1001 nodejs
+RUN adduser -u 1001 -G nodejs -s /bin/sh nodejs
+USER nodejs
 
-# Define the command to start the application
-CMD ["node", "dist/index.js"]
+# Show Node and npm versions before installing
+RUN node -v && npm -v
+# Show installed packages after install
+RUN npm list --depth=0
+
+# Start application
+CMD ["node", "index.js"] # Or your startup script using node directly
