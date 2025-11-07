@@ -16,6 +16,7 @@ This project is a comprehensive blog platform. It allows users to create account
 *   **Image Uploads:** Users can upload images to include in their blog posts.
 *   **Responsive Design:**  The application is designed to be responsive and accessible on various devices.
 *   **Admin Role (Optional):**  (While not explicitly stated in the provided files, a common blog feature is an admin role for managing content.) This is possible and should be documented if included.
+*   **Docker Support:** Application can be containerized using Docker for easy deployment and scaling.
 
 ## Screenshots/Demos
 
@@ -110,7 +111,7 @@ This application can be deployed to various platforms, including:
 *   **Heroku:**  Follow the Heroku deployment guide for Node.js applications.
 *   **AWS EC2:**  Set up an EC2 instance and deploy the application manually.
 *   **Digital Ocean:**  Use a Digital Ocean droplet to host the application.
-*   **Docker:** Containerize the application using Docker for easier deployment and scaling.
+*   **Docker:** Containerize the application using Docker for easier deployment and scaling.  See the Dockerfile for instructions on building the Docker image.
 
 **General Steps:**
 
@@ -127,6 +128,18 @@ This application can be deployed to various platforms, including:
 6.  **Set up a reverse proxy:**
     *   Use Nginx or Apache to handle incoming requests and route them to the application.
 7.  **Configure a domain name and SSL certificate.**
+
+**Docker Deployment:**
+
+1. **Build the Docker image:**
+   bash
+   docker build -t blog-app .
+   
+2. **Run the Docker container:**
+   bash
+   docker run -p 3000:3000 -d blog-app
+   
+   (Adjust port mappings as needed).  Ensure your `.env` variables are passed to the container.
 
 ## Contributing
 
