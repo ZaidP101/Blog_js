@@ -29,6 +29,12 @@ COPY --from=builder /app/.env ./
 # Install only production dependencies
 RUN npm install --legacy-peer-deps --production --verbose
 
+# Show Node version
+RUN node -v
+
+# Show npm version
+RUN npm -v
+
 # Set environment variables (can also be passed at runtime)
 ENV NODE_ENV production
 # Example:  ENV PORT 3000
