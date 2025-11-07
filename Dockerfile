@@ -28,11 +28,11 @@ COPY --from=builder /app/.env ./
 # Install only production dependencies
 RUN npm install --production --frozen-lockfile --omit=dev --verbose
 
-# Copy package.json and package-lock.json (or yarn.lock)
-COPY package*.json ./
+# Show Node version
+RUN node -v
 
-# Show Node and npm versions before installing
-RUN node -v && npm -v
+# Show npm version
+RUN npm -v
 
 # Set environment variables
 ENV NODE_ENV production
