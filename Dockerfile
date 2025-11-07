@@ -20,7 +20,7 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/yarn.lock ./
 RUN yarn install --frozen-lockfile --production --network-timeout 60000 || yarn cache clean
 
-COPY --from=builder /app/public ./
+COPY --from=builder /app/public ./public
 COPY --from=builder /app/index.js ./
 COPY --from=builder /app/.env ./ # Consider using Docker secrets for production
 #COPY --from=builder /app/dist ./ # Uncomment if you have a dist folder
@@ -30,10 +30,15 @@ ENV PORT 3000
 
 EXPOSE 3000
 
+# Show installed packages after install
+RUN npm list --depth=0
 
+# Show Node and npm versions before installing
+RUN node -v && npm -v
 
-RUN addgroup -g 1001 nodejs
-RUN adduser -u 1001 -G nodejs -s /bin/sh nodejs
+RUN addgroup -g 1001 nodejs && \
+    adduser -u 1001 -G nodejs -s /bin/sh nodejs
+
 USER nodejs
 
 CMD ["node", "index.js"]
