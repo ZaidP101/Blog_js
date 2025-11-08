@@ -20,7 +20,7 @@ FROM base AS builder
 RUN yarn build
 
 # Production image
-FROM node:18-alpine AS production
+FROM node:20-alpine AS production
 
 WORKDIR /app
 
@@ -42,18 +42,12 @@ ENV PORT 3000
 
 EXPOSE 3000
 
-# Create a non-root user
+# Create a non-root user and group
 RUN addgroup -g 1001 nodejs && \
     adduser -u 1001 -G nodejs -s /bin/sh nodejs
 
 USER nodejs
 
-# Show installed packages after install
-RUN npm list --depth=0
-
-# Show Node and npm versions before installing
-RUN node -v && npm -v
-
-# Use dumb-init as the entrypoint for proper signal handling
-ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+#ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["node", "./dist/index.js"]
+
