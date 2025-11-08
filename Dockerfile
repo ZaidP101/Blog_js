@@ -1,8 +1,8 @@
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 WORKDIR /app
 
-# Install dumb-init for signal handling
+# Install dumb-init for signal handling (optional but recommended)
 RUN apk add --no-cache dumb-init
 
 # Copy package.json and yarn.lock first for caching
@@ -42,12 +42,16 @@ ENV PORT 3000
 
 EXPOSE 3000
 
+# Show installed packages after install
+RUN npm list --depth=0
+
+# Show Node and npm versions before installing
+RUN node -v && npm -v
+
 # Create a non-root user and group
 RUN addgroup -g 1001 nodejs && \
     adduser -u 1001 -G nodejs -s /bin/sh nodejs
 
 USER nodejs
 
-#ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-CMD ["node", "./dist/index.js"]
-
+ENTRYPOINT ["/usr/bin/dumb-init", "--", "node", "./dist/index.js"]
